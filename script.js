@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     const getResultBtn = document.getElementById('get-result-btn');
     const landingPage = document.getElementById('landing-page');
@@ -11,10 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentCategory = '';
 
-    // "Get Results" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
+    // "Get Results" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ എന്തു സംഭവിക്കണം എന്ന് ഇവിടെ പറയുന്നു
     getResultBtn.addEventListener('click', () => {
+        // 1. "Get Result" ഉള്ള ലാൻഡിംഗ് പേജ് ഹൈഡ് ചെയ്യുന്നു
         landingPage.classList.add('hidden');
+        
+        // 2. ചാറ്റ് ബോട്ട് ഉള്ള പേജ് കാണിക്കുന്നു
         chatContainer.classList.remove('hidden');
+        
+        // 3. സ്വാഗത സന്ദേശം കാണിക്കാൻ തുടങ്ങുന്നു
         showWelcomeMessage();
     });
 
@@ -26,21 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // സ്വാഗത സന്ദേശം കാണിക്കുക
     function showWelcomeMessage() {
-        addBotMessage("Welcome to the Sahithyotsav Results Bot!", () => {
+        typeMessage("Welcome to the Sahithyotsav Results Bot!", () => {
             startBtn.classList.remove('hidden');
         });
     }
 
     // കാറ്റഗറി തിരഞ്ഞെടുക്കാനുള്ള സന്ദേശം
     function showCategoryMessage() {
-        addBotMessage("Please select a category to view results.", fetchCategories);
+        typeMessage("Please select a category to view results.", fetchCategories);
     }
     
     // കാറ്റഗറികൾ API-ൽ നിന്ന് എടുത്ത് ബട്ടനുകളായി കാണിക്കുക
     async function fetchCategories() {
+        // കാറ്റഗറി ബട്ടണുകൾ കാണിക്കുന്നതിന് മുൻപ് പഴയവ നീക്കം ചെയ്യുന്നു
+        const existingButtons = actionArea.querySelectorAll('.action-btn');
+        existingButtons.forEach(btn => btn.style.display = 'none');
+
         const response = await fetch(`${API_URL}?action=getCategories`);
         const categories = await response.json();
-        actionArea.innerHTML = '';
+        
         categories.forEach(category => {
             const btn = document.createElement('button');
             btn.className = 'action-btn';
@@ -48,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.onclick = () => {
                 currentCategory = category;
                 addUserMessage(category);
+                // കാറ്റഗറി ബട്ടണുകൾ ഹൈഡ് ചെയ്യാതെ പ്രോഗ്രാം കാണിക്കുന്നു
                 showProgramMessage(category);
             };
             actionArea.appendChild(btn);
@@ -56,15 +67,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // പ്രോഗ്രാം തിരഞ്ഞെടുക്കാനുള്ള സന്ദേശം
     function showProgramMessage(category) {
-        addBotMessage(`Results for: ${category}`);
-        addBotMessage("Please select a program:", () => fetchPrograms(category));
+        typeMessage(`Results for: ${category}`);
+        typeMessage("Please select a program:", () => fetchPrograms(category));
     }
 
     // പ്രോഗ്രാമുകൾ API-ൽ നിന്ന് എടുത്ത് ബട്ടനുകളായി കാണിക്കുക
     async function fetchPrograms(category) {
+        // പഴയ ആക്ഷൻ ബട്ടണുകൾ നീക്കം ചെയ്യുന്നു
+        actionArea.innerHTML = '';
         const response = await fetch(`${API_URL}?action=getPrograms&category=${encodeURIComponent(category)}`);
         const programs = await response.json();
-        actionArea.innerHTML = ''; // പഴയ ബട്ടണുകൾ നീക്കം ചെയ്യുന്നു
+        
         programs.forEach(program => {
             const btn = document.createElement('button');
             btn.className = 'action-btn';
@@ -79,10 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // റിസൾട്ടുകൾ API-ൽ നിന്ന് എടുക്കുക
     async function fetchResults(category, program) {
-        actionArea.innerHTML = ''; // ബട്ടണുകൾ നീക്കം ചെയ്യുന്നു
-        addBotMessage('Fetching results...', async () => {
+        actionArea.innerHTML = ''; 
+        typeMessage('Fetching results...', async () => {
             const response = await fetch(`${API_URL}?action=getResults&category=${encodeURIComponent(category)}&program=${encodeURIComponent(program)}`);
             const results = await response.json();
+            // പഴയ മെസ്സേജുകൾ നീക്കം ചെയ്യുന്നു
+            const botMessages = chatBox.querySelectorAll('.bot-message, .user-message, .result-card');
+            botMessages.forEach(msg => msg.remove());
             displayResults(results);
         });
     }
@@ -90,43 +106,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // റിസൾട്ടുകൾ ഇമേജ് ആയി കാണിക്കുക
     function displayResults(results) {
         if (results.length === 0) {
-            addBotMessage("No results found for this selection.");
-            return;
+            typeMessage("No results found for this selection.");
+        } else {
+            results.forEach(result => {
+                const resultCard = `
+                    <div class="result-card">
+                        <img src="${result.ImageURL}" alt="${result.Name}">
+                        <p>${result.Name} - <strong>${result.Position}</strong></p>
+                        <a href="${result.ImageURL}" download="${result.Name}_${result.Program}.jpg" class="download-icon">📥</a>
+                    </div>
+                `;
+                addRawHtmlToBot(resultCard);
+            });
         }
-        results.forEach(result => {
-            const resultCard = `
-                <div class="result-card">
-                    <img src="${result.ImageURL}" alt="${result.Name}">
-                    <p>${result.Name} - <strong>${result.Position}</strong></p>
-                    <a href="${result.ImageURL}" download="${result.Name}_${result.Program}.jpg" class="download-icon">📥</a>
-                </div>
-            `;
-            addRawHtmlToBot(resultCard);
-        });
         
         // തിരികെ പോകാനുള്ള ബട്ടൺ
         const backButton = document.createElement('button');
         backButton.className = 'action-btn';
-        backButton.innerText = 'Back to Categories';
+        backButton.innerText = 'Back to Programs';
         backButton.onclick = () => {
             actionArea.innerHTML = '';
-            chatBox.innerHTML = ''; // ചാറ്റ് ക്ലിയർ ചെയ്യാം (വേണമെങ്കിൽ)
-            showCategoryMessage();
+            const messages = chatBox.querySelectorAll('.result-card, .bot-message, .user-message');
+            messages.forEach(msg => msg.remove());
+            showProgramMessage(currentCategory);
         };
-        actionArea.appendChild(backButton);
-    }
 
-    // ചാറ്റ് ബോക്സിൽ ബോട്ട് സന്ദേശം ചേർക്കുക
-    function addBotMessage(text, callback) {
+        const backToCatButton = document.createElement('button');
+        backToCatButton.className = 'action-btn';
+        backToCatButton.innerText = 'Back to Categories';
+        backToCatButton.onclick = () => {
+             actionArea.innerHTML = '';
+             const messages = chatBox.querySelectorAll('.result-card, .bot-message, .user-message');
+             messages.forEach(msg => msg.remove());
+             showCategoryMessage();
+        };
+
+        actionArea.appendChild(backButton);
+        actionArea.appendChild(backToCatButton);
+    }
+    
+    // ടൈപ്പിംഗ് എഫക്റ്റോടു കൂടി സന്ദേശം ചേർക്കാൻ ഈ ഫംഗ്ഷൻ ഉപയോഗിക്കുന്നു
+    function typeMessage(text, callback) {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message bot-message';
-        msgDiv.innerText = text;
         chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        if (callback) callback();
+        
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                msgDiv.textContent += text.charAt(i);
+                i++;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } else {
+                clearInterval(interval);
+                if (callback) {
+                    callback();
+                }
+            }
+        }, 50); // ടൈപ്പിംഗ് വേഗത (milliseconds)
     }
 
-    // ചാറ്റ് ബോക്സിൽ HTML ചേർക്കുക
     function addRawHtmlToBot(html) {
         const wrapperDiv = document.createElement('div');
         wrapperDiv.innerHTML = html;
@@ -134,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // യൂസർ സന്ദേശം ചേർക്കുക
     function addUserMessage(text) {
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message user-message';
