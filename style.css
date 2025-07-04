@@ -1,0 +1,149 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #1a1a1a;
+    color: white;
+}
+
+/* ലാൻഡിംഗ് പേജ് സ്റ്റൈൽ */
+#landing-page {
+    background-image: url('https://www.google.com/imgres?q=madeena%20images&imgurl=https%3A%2F%2Fimg.myloview.com%2Fstickers%2Fa-evening-shot-of-green-dome-raula-masjid-al-nabawi-madeena-saudi-arabia-700-253578171.jpg&imgrefurl=https%3A%2F%2Fmyloview.com%2Fsticker-a-evening-shot-of-green-dome-raula-masjid-al-nabawi-madeena-saudi-no-F1D4BBB&docid=s5gfY3F8lwJLhM&tbnid=94pvAh_ItyoxaM&vet=12ahUKEwjvnJ2a66KOAxXLVmwGHXbRNMgQM3oECCwQAA..i&w=700&h=467&hcb=2&ved=2ahUKEwjvnJ2a66KOAxXLVmwGHXbRNMgQM3oECCwQAA'); /* നിങ്ങളുടെ ബാക്ക്ഗ്രൗണ്ട് ഇമേജ് URL */
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#landing-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* ഓവർലേ */
+}
+
+#get-result-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    background-color: #6a1b9a;
+    color: white;
+    border: none;
+    border-radius: 15px; /* ആവശ്യപ്പെട്ടത് പോലെ */
+    cursor: pointer;
+    z-index: 1;
+    transition: background-color 0.3s;
+}
+
+#get-result-btn:hover {
+    background-color: #8e24aa;
+}
+
+/* ചാറ്റ് കണ്ടെയ്‌നർ */
+#chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 700px;
+    margin: auto;
+    background-color: #0d0d0d;
+}
+
+.header {
+    padding: 15px;
+    background-color: #1f1f1f;
+    text-align: center;
+    border-bottom: 1px solid #333;
+}
+
+#chat-box {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.message {
+    margin-bottom: 15px;
+    padding: 12px 18px;
+    border-radius: 20px;
+    max-width: 80%;
+    line-height: 1.5;
+}
+
+.bot-message {
+    background-color: #2c2c2c;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+    float: left;
+    clear: both;
+}
+
+.user-message {
+    background-color: #6a1b9a;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+    float: right;
+    clear: both;
+    margin-top: 15px; /* ആവശ്യപ്പെട്ടത് പോലെ */
+}
+
+#action-area {
+    padding: 10px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 10px 15px;
+    background-color: #3e3e3e;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #555;
+}
+
+.footer {
+    padding: 15px;
+    border-top: 1px solid #333;
+    text-align: center;
+    background-color: #1f1f1f;
+}
+
+.hidden {
+    display: none;
+}
+
+/* റിസൾട്ട് ഇമേജ് സ്റ്റൈൽ */
+.result-card {
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+    max-width: 250px;
+    float: left;
+    clear: both;
+}
+
+.result-card img {
+    width: 100%;
+    border-radius: 5px;
+}
+
+.result-card .download-icon {
+    display: block;
+    text-align: right;
+    margin-top: 5px;
+    color: white;
+    text-decoration: none;
+    font-size: 24px;
+}
